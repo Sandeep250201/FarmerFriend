@@ -1,0 +1,126 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Crop Prediction</title>
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f4f4f4;
+            padding: 20px;
+        }
+        .container {
+            max-width: 500px;
+            margin: auto;
+            background: white;
+            padding: 20px;
+            border-radius: 10px;
+            box-shadow: 0px 0px 10px 0px #0000001a;
+        }
+        input, button {
+            width: 100%;
+            margin-bottom: 10px;
+            padding: 10px;
+            border-radius: 5px;
+            border: 1px solid #ccc;
+        }
+        button {
+            background-color: #28a745;
+            color: white;
+            cursor: pointer;
+        }
+        button:hover {
+            background-color: #218838;
+        }
+        #result {
+            margin-top: 15px;
+            padding: 15px;
+            font-size: 16px;
+            font-weight: bold;
+            color: #333;
+            background: #e6f7ff;
+            border-left: 5px solid #007bff;
+            border-radius: 8px;
+            box-shadow: 2px 2px 5px rgba(0, 0, 0, 0.1);
+        }
+        #result span {
+            font-weight: normal;
+            display: block;
+            margin: 5px 0;
+        }
+    </style>
+</head>
+<body>
+
+<div class="container">
+    <h2>Crop Prediction</h2>
+    <form id="cropForm">
+        <label for="N">Nitrogen (N):</label>
+        <input type="number" id="N" name="N" required>
+
+        <label for="P">Phosphorus (P):</label>
+        <input type="number" id="P" name="P" required>
+
+        <label for="K">Potassium (K):</label>
+        <input type="number" id="K" name="K" required>
+
+        <label for="ph">Soil pH:</label>
+        <input type="number" id="ph" name="ph" required>
+
+        <label for="temperature">Temperature (°C):</label>
+        <input type="number" id="temperature" name="temperature" required>
+
+        <label for="humidity">Humidity (%):</label>
+        <input type="number" id="humidity" name="humidity" required>
+
+        <label for="rainfall">Rainfall (mm):</label>
+        <input type="number" id="rainfall" name="rainfall" required>
+
+        <button type="button" onclick="predictCrop()">Predict Crop</button>
+    </form>
+
+    <div id="result"></div>
+</div>
+
+<script>
+    function predictCrop() {
+        var formData = {
+            N: document.getElementById("N").value,
+            P: document.getElementById("P").value,
+            K: document.getElementById("K").value,
+            ph: document.getElementById("ph").value,
+            temperature: document.getElementById("temperature").value,
+            humidity: document.getElementById("humidity").value,
+            rainfall: document.getElementById("rainfall").value
+        };
+    
+        fetch("/predict/?" + new URLSearchParams(formData), {
+            method: "GET"
+        })
+        .then(response => response.json())
+        .then(data => {
+            let inputData = data.input_data;
+    
+            document.getElementById("result").innerHTML = `
+                <strong>🌱 Recommended Crop:</strong> ${data.predicted_crop}<br><br>
+                <strong>📊 Input Data:</strong>
+                <span>🌿 Nitrogen (N): ${inputData.N}</span>
+                <span>⚡ Phosphorus (P): ${inputData.P}</span>
+                <span>💧 Potassium (K): ${inputData.K}</span>
+                <span>🧪 Soil pH: ${inputData.ph}</span>
+                <span>🌡️ Temperature: ${inputData.temperature}</span>
+                <span>💦 Humidity: ${inputData.humidity}</span>
+                <span>🌧️ Rainfall: ${inputData.rainfall}</span>
+            `;
+        })
+        .catch(() => {
+            document.getElementById("result").innerText = "⚠️ Error: Unable to predict the crop.";
+        });
+    }
+    
+</script>
+
+</body>
+</html>

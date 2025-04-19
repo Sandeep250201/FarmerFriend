@@ -1,0 +1,6 @@
+django 
+pandas 
+xgboost 
+joblib
+scikit-learn
+django-cors-headers
